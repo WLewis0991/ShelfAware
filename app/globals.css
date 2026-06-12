@@ -310,5 +310,24 @@
   .icon-sm {
     @apply w-5 h-5;
   }
-}
+  /*  NAVBAR COMPONENT */
 
+  .logo-text {
+    @apply font-semibold text-xl hidden sm:block text-black;
+  }
+  .nav-link-base {
+    @apply text-base font-medium leading-6 transition-all;
+  }
+  .nav-link-active {
+    @apply text-[var(--color-brand)] border-b-2 border-[var(--color-brand)] pb-0.5;
+  }
+  .nav-btn {
+    @apply text-base font-medium text-black hover:opacity-70 transition-opacity cursor-pointer;
+  }
+  .nav-user-link {
+    @apply flex items-center gap-1 hover:opacity-70 transition-opacity;
+  }
+  .nav-user-name {
+    @apply hidden sm:inline text-base font-medium text-black;
+  }
+}
