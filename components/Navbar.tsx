@@ -1,5 +1,6 @@
 "use client";
 
+import { SignInButton, SignUpButton, Show, UserButton } from "@clerk/nextjs";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -38,6 +39,13 @@ const Navbar = () => {
               </Link>
             );
           })}
+          <Show when="signed-out">
+            <SignInButton />
+            <SignUpButton />
+          </Show>
+          <Show when="signed-in">
+            <UserButton />
+          </Show>
         </nav>
       </div>
     </header>
