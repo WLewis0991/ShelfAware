@@ -75,3 +75,8 @@ export interface TextSegment {
   pageNumber?: number;
   wordCount: number;
 }
+
+export interface Messages {
+  role: string;
+  content: string;
+}
