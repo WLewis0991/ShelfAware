@@ -110,11 +110,6 @@ export const voiceOptions = {
     name: "Daniel",
     description: "Middle-aged male, British, authoritative but warm",
   },
-  chris: {
-    id: "iP95p4xoKVk53GoZ742B",
-    name: "Chris",
-    description: "Male, casual & easy-going",
-  },
   // Female voices
   rachel: {
     id: "21m00Tcm4TlvDq8ikWAM",
@@ -130,7 +125,7 @@ export const voiceOptions = {
 
 // Voice categories for the selector UI
 export const voiceCategories = {
-  male: ["dave", "daniel", "chris"],
+  male: ["dave", "daniel"],
   female: ["rachel", "sarah"],
 };
 
