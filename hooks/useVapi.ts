@@ -185,15 +185,15 @@ export const useVapi = (book: IBook) => {
           author: book.author,
           bookId: book._id
         }, 
-        //   voice : {
-        //   provider: '11Labs' as const,
-        //   voiceId: getVoice(voice).id,
-        //   model: 'eleven_turbo_v2_5x' as const,
-        //   stability: VOICE_SETTINGS.stability,
-        //   similarityBoost: VOICE_SETTINGS.similarityBoost,
-        //   style: VOICE_SETTINGS.style,
-        //   useSpeakerBoost: VOICE_SETTINGS.useSpeakerBoost,
-        // }
+          voice : {
+          provider: '11labs' as const,
+          voiceId: getVoice(voice).id,
+          model: 'eleven_turbo_v2_5' as const,
+          stability: VOICE_SETTINGS.stability,
+          similarityBoost: VOICE_SETTINGS.similarityBoost,
+          style: VOICE_SETTINGS.style,
+          useSpeakerBoost: VOICE_SETTINGS.useSpeakerBoost,
+        }
       })
 
     }catch (e) {
