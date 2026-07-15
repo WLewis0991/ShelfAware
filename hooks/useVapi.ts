@@ -1,7 +1,10 @@
-import { DEFAULT_VOICE } from "@/lib/constants";
+import { ASSISTANT_ID, DEFAULT_VOICE, VOICE_SETTINGS } from "@/lib/constants";
 import { IBook, Messages } from "@/types";
 import { useAuth } from "@clerk/nextjs";
 import { useEffect, useRef, useState } from "react";
+import Vapi from "@vapi-ai/web"
+import { getVoice } from "@/lib/utils";
+import { startVoiceSession, endVoiceSession } from '@/lib/actions/session.actions';
 
 export type CallStatus =
   | "idle"
@@ -18,6 +21,22 @@ const useLatestRef = <T>(value: T) => {
   });
   return ref;
 };
+
+const VAPI_API_KEY = process.env.NEXT_PUBLIC_VAPI_API_KEY || "";
+
+let vapi: InstanceType<typeof Vapi>;
+
+function getVapi(): InstanceType<typeof Vapi> {
+  if (!vapi) {
+    if (!VAPI_API_KEY) {
+      throw new Error('VAPI_API_KEY is not set in environment variables');
+    }
+    vapi = new Vapi(VAPI_API_KEY);
+  }
+
+  return vapi;
+}
+
 
 export const useVapi = (book: IBook) => {
   const { userId } = useAuth();
@@ -57,6 +76,34 @@ export const useVapi = (book: IBook) => {
     setStatus('connecting');
 
     try {
+      const result = await startVoiceSession(userId, bookRef.current._id);
+      if (!result.success) {
+        setLimitError(result.error || 'Session limit reached, please upgrade your plan.');
+        setStatus('idle');
+        return;
+      }
+
+      sessionIdRef.current = result.sessionId || null;
+
+      const firstMessage = `Hey, good to meet you. Quick question, have you actually read ${book.title}? Or are you just skimming through it?`;
+
+      await getVapi().start(ASSISTANT_ID, {
+        firstMessage,
+        variableValues: {
+          title: book.title,
+          author: book.author,
+          bookId: book._id
+        }, 
+        //   voice : {
+        //   provider: '11Labs' as const,
+        //   voiceId: getVoice(voice).id,
+        //   model: 'eleven_turbo_v2_5x' as const,
+        //   stability: VOICE_SETTINGS.stability,
+        //   similarityBoost: VOICE_SETTINGS.similarityBoost,
+        //   style: VOICE_SETTINGS.style,
+        //   useSpeakerBoost: VOICE_SETTINGS.useSpeakerBoost,
+        // }
+      })
 
     }catch (e) {
       console.error('Error starting call', e);
@@ -64,7 +111,11 @@ export const useVapi = (book: IBook) => {
       setLimitError('An error occurred while starting the call');
     }
   };
-  const stop = async () => {};
+  const stop = async () => {
+    isStoppingRef.current = true;
+    await getVapi().stop();
+    isStoppingRef.current = false;
+  };
   const clearErrors = async () => {};
 
   return {

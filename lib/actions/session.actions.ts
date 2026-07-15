@@ -47,16 +47,15 @@ export const endVoiceSession = async (
     const session = await VoiceSession.findByIdAndUpdate(
       sessionId,
       { endedAt: new Date(), durationSeconds },
-      { new: true },
     );
 
     if (!session) {
-      return { success: false };
+      return { success: false, error: "Session not found" };
     }
 
     return { success: true };
   } catch (e) {
     console.error("Error ending voice session:", e);
-    return { success: false };
+    return { success: false, error : 'Failed to end voice session. Try again later.' };
   }
 };
