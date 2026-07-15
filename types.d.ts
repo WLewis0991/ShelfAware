@@ -80,3 +80,12 @@ export interface Messages {
   role: string;
   content: string;
 }
+
+
+export interface StartSessionResult {
+    success: boolean;
+    sessionId?: string;
+    maxDurationMinutes?: number;
+    error?: string;
+    isBillingError?: boolean;
+}

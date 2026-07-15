@@ -1,6 +1,6 @@
 'use client'
 
-import { Mic } from "lucide-react"
+import { Mic, MicOff } from "lucide-react"
 import { IBook } from "@/types"
 import { useVapi } from "@/hooks/useVapi"
 import Image from "next/image"
@@ -28,12 +28,15 @@ const VapiControls = ({ book }: { book: IBook }) => {
               </div>
             )}
             <div className="vapi-mic-wrapper">
+              {isActive && <span className="vapi-pulse-ring" />}
               <button
+                onClick={isActive ? stop : start}
+                disabled={status === 'connecting'}
                 type="button"
-                className="vapi-mic-btn vapi-mic-btn-inactive"
-                aria-label="Start recording"
+                className={`vapi-mic-btn ${isActive ? "vapi-mic-btn-active" : "vapi-mic-btn-inactive"}`}
+                aria-label={isActive ? "Stop recording" : "Start recording"}
               >
-                <Mic className="size-5" />
+                {isActive ? <MicOff className="size-5 text-white" /> : <Mic className="size-5" />}
               </button>
             </div>
           </div>

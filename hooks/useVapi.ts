@@ -50,7 +50,20 @@ export const useVapi = (book: IBook) => {
   //const remainingSeconds
   //showTimeWarning
 
-  const start = async () => {};
+  const start = async () => {
+    if (!userId) return setLimitError('Please login to start a conversation.');
+
+    setLimitError(null);
+    setStatus('connecting');
+
+    try {
+
+    }catch (e) {
+      console.error('Error starting call', e);
+      setStatus('idle');
+      setLimitError('An error occurred while starting the call');
+    }
+  };
   const stop = async () => {};
   const clearErrors = async () => {};
 
