@@ -4,6 +4,7 @@ import { ArrowLeft, Mic } from "lucide-react";
 import { getBookBySlug } from "@/lib/actions/book.actions";
 import Image from "next/image";
 import Link from "next/link";
+import VapiControls from "@/components/VapiControls";
 
 const BookDetailPage = async ({
   params,
@@ -74,16 +75,7 @@ const BookDetailPage = async ({
             </div>
           </div>
         </div>
-
-        <div className="transcript-container min-h-[400px]">
-          <div className="transcript-empty">
-            <Mic className="size-12 text-[#8B7355] mb-2" />
-            <p className="transcript-empty-text">No conversation yet</p>
-            <p className="transcript-empty-hint">
-              Click the mic button above to start talking
-            </p>
-          </div>
-        </div>
+        <VapiControls book={book} />
       </div>
     </div>
   );
