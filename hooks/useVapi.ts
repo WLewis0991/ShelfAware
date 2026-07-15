@@ -63,11 +63,102 @@ export const useVapi = (book: IBook) => {
     status === "thinking" ||
     status === "speaking" ||
     status === "starting";
-  // Limits
-  //const maxDurationRef =
-  //const maxDurationSeconds
-  //const remainingSeconds
-  //showTimeWarning
+
+  useEffect(() => {
+    const vapiInstance = getVapi();
+
+    const handleMessage = (message: any) => {
+      if (!message || !message.type) return;
+
+      if (message.type === "transcript") {
+        const { role, transcript, transcriptType } = message;
+
+        if (role === "user") {
+          if (transcriptType === "partial") {
+            setCurrentUserMessage(transcript);
+          } else if (transcriptType === "final") {
+            setCurrentUserMessage("");
+            setStatus("thinking");
+            setMessages((prev) => {
+              const last = prev[prev.length - 1];
+              if (last?.role === "user" && last?.content === transcript) return prev;
+              return [...prev, { role: "user", content: transcript }];
+            });
+          }
+        } else if (role === "assistant") {
+          if (transcriptType === "partial") {
+            setCurrentMessage(transcript);
+          } else if (transcriptType === "final") {
+            setCurrentMessage("");
+            setMessages((prev) => {
+              const last = prev[prev.length - 1];
+              if (last?.role === "assistant" && last?.content === transcript) return prev;
+              return [...prev, { role: "assistant", content: transcript }];
+            });
+          }
+        }
+      } else if (message.type === "status-update") {
+        if (message.status === "ended") {
+          setStatus("idle");
+        } else if (message.status === "listening") {
+          setStatus("listening");
+        } else if (message.status === "thinking") {
+          setStatus("thinking");
+        } else if (message.status === "speaking") {
+          setStatus("speaking");
+        } else if (message.status === "connecting") {
+          setStatus("connecting");
+        }
+      }
+    };
+
+    const handleCallStart = () => {
+      setStatus("listening");
+    };
+
+    const handleCallEnd = () => {
+      setStatus("idle");
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+        timerRef.current = null;
+      }
+      if (sessionIdRef.current) {
+        endVoiceSession(sessionIdRef.current, durationRef.current);
+        sessionIdRef.current = null;
+      }
+    };
+
+    vapiInstance.on("message", handleMessage);
+    vapiInstance.on("call-start", handleCallStart);
+    vapiInstance.on("call-end", handleCallEnd);
+
+    return () => {
+      vapiInstance.off("message", handleMessage);
+      vapiInstance.off("call-start", handleCallStart);
+      vapiInstance.off("call-end", handleCallEnd);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (status === "listening" || status === "speaking" || status === "thinking") {
+      if (!timerRef.current) {
+        timerRef.current = setInterval(() => {
+          setDuration((prev) => prev + 1);
+        }, 1000);
+      }
+    } else {
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+        timerRef.current = null;
+      }
+    }
+    return () => {
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+        timerRef.current = null;
+      }
+    };
+  }, [status]);
 
   const start = async () => {
     if (!userId) return setLimitError('Please login to start a conversation.');

@@ -6,6 +6,12 @@ import { useVapi } from "@/hooks/useVapi"
 import Image from "next/image"
 import Transcript from "./Transcript"
 
+const formatDuration = (seconds: number): string => {
+  const m = Math.floor(seconds / 60);
+  const s = seconds % 60;
+  return `${m}:${s.toString().padStart(2, "0")}`;
+};
+
 const VapiControls = ({ book }: { book: IBook }) => {
   const{ status, isActive, messages, currentMessage, currentUserMessage, duration, start, stop, clearErrors, } = useVapi(book)
 
@@ -50,8 +56,8 @@ const VapiControls = ({ book }: { book: IBook }) => {
 
             <div className="flex flex-wrap items-center gap-2 mt-1">
               <span className="vapi-status-indicator">
-                <span className="vapi-status-dot vapi-status-dot-ready" />
-                <span className="vapi-status-text">Ready</span>
+                <span className={`vapi-status-dot vapi-status-dot-${status}`} />
+                <span className="vapi-status-text">{status.charAt(0).toUpperCase() + status.slice(1)}</span>
               </span>
               <span className="vapi-status-indicator">
                 <span className="vapi-status-text">
@@ -59,7 +65,7 @@ const VapiControls = ({ book }: { book: IBook }) => {
                 </span>
               </span>
               <span className="vapi-status-indicator">
-                <span className="vapi-status-text">0:00/15:00</span>
+                <span className="vapi-status-text">{formatDuration(duration)}/15:00</span>
               </span>
             </div>
           </div>
