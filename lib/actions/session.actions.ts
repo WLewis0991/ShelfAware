@@ -1,9 +1,10 @@
 'use server';
 
-
+import { auth } from "@clerk/nextjs/server";
 import { connectToDatabase } from "@/database/mongoose";
 import VoiceSession from "@/database/models/voiceSession.model";
-import { getCurrentBillingPeriodStart } from "../subscription-constant";
+import { getCurrentBillingPeriodStart } from "../subscription-constants";
+import { checkSessionLimit } from "../plans";
 import { EndSessionResult, StartSessionResult } from "@/types";
 
 export const startVoiceSession = async (
@@ -11,9 +12,22 @@ export const startVoiceSession = async (
     bookId: string): Promise<StartSessionResult> => {
     
         try {
-            await connectToDatabase();
+            const { userId } = await auth();
+            if (!userId || userId !== clerkId) {
+                return { success: false, error: 'Not authenticated', isBillingError: false }
+            }
 
-            //Check if there's an active session for this user and book
+            const { allowed, current, limit, maxDurationMinutes } = await checkSessionLimit(clerkId);
+
+            if (!allowed) {
+                return {
+                    success: false,
+                    error: `Monthly session limit reached (${current}/${limit}). Upgrade your plan for more sessions.`,
+                    isBillingError: true,
+                }
+            }
+
+            await connectToDatabase();
 
             const session = await VoiceSession.create({
                 clerkId, bookId, startedAt: new Date(),
@@ -24,14 +38,15 @@ export const startVoiceSession = async (
             return {
                 success: true,
                 sessionId: session._id.toString(),
-                //maxDurationMinutes: 30, Placeholder for now, can be dynamic based on subscription
+                maxDurationMinutes,
             }
 
         }catch (e) {
             console.error('Error starting voice session', e);
             return {
                 success: false,
-                error: 'Failed to start voice session. Try again later.'
+                error: 'Failed to start voice session. Try again later.',
+                isBillingError: false,
             }
         }
 

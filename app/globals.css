@@ -727,6 +727,43 @@
   }
 
   /* ===========================================
+     PRICING TABLE / SUBSCRIPTIONS
+     =========================================== */
+  .clerk-pricing-table {
+    @apply max-w-4xl mx-auto;
+  }
+  .clerk-pricing-card {
+    @apply bg-white rounded-xl p-6 border border-[var(--border-subtle)] shadow-soft-sm;
+  }
+  .clerk-pricing-card-popular {
+    @apply border-2 border-[var(--accent-warm)] shadow-soft-md;
+  }
+  .clerk-pricing-card-active {
+    @apply bg-[var(--accent-light)] border-2 border-[var(--accent-warm)];
+  }
+  .clerk-pricing-plan-name {
+    @apply font-serif font-bold text-xl text-[var(--text-primary)];
+  }
+  .clerk-pricing-plan-description {
+    @apply text-sm text-[var(--text-secondary)];
+  }
+  .clerk-pricing-price {
+    @apply font-bold text-3xl text-[var(--accent-warm)];
+  }
+  .clerk-pricing-features {
+    @apply space-y-2;
+  }
+  .clerk-pricing-feature {
+    @apply text-sm text-[var(--text-secondary)];
+  }
+  .clerk-pricing-cta {
+    @apply btn-primary w-full text-center;
+  }
+  .clerk-pricing-cta-current {
+    @apply btn-secondary w-full text-center cursor-default;
+  }
+
+  /* ===========================================
      BACK BUTTON (FLOATING)
      =========================================== */
   .back-btn-floating {

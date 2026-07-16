@@ -3,7 +3,6 @@ import { ReactNode } from "react";
 import { Control, FieldPath, FieldValues } from "react-hook-form";
 import { LucideIcon } from "lucide-react";
 import z from "zod";
-import { UploadSchema } from "@/lib/zod";
 
 export interface BookCardProps {
   title: string;
@@ -82,7 +81,7 @@ export interface Messages {
 }
 
 
-import {PLANS, PlanType} from "@/lib/subscription-constants";
+import {PlanType} from "@/lib/subscription-constants";
 
 export interface SessionCheckResult {
     allowed: boolean;

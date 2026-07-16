@@ -1,8 +1,10 @@
 "use server";
 
+import { auth } from "@clerk/nextjs/server";
 import { connectToDatabase } from "@/database/mongoose";
 import { CreateBook, TextSegment } from "@/types";
 import { generateSlug, serializeData } from "../utils";
+import { checkBookLimit } from "../plans";
 import Book from "@/database/models/book.model";
 import BookSegment from "@/database/models/bookSegment.model";
 
@@ -35,6 +37,9 @@ export const checkBookExists = async (title: string) => {
 
 export const createBook = async (data: CreateBook) => {
   try {
+    const { userId } = await auth();
+    if (!userId) return { success: false, error: "Not authenticated" };
+
     await connectToDatabase();
 
     const slug = generateSlug(data.title);
@@ -49,7 +54,14 @@ export const createBook = async (data: CreateBook) => {
       };
     }
 
-    // TODO: Check Subscription before creating a book
+    const { allowed, current, limit } = await checkBookLimit(userId);
+    if (!allowed) {
+      return {
+        success: false,
+        error: `Book limit reached (${current}/${limit}). Upgrade your plan to add more books.`,
+        isBillingError: true,
+      };
+    }
 
     const book = await Book.create({ ...data, slug, totalSegments: 0 });
 

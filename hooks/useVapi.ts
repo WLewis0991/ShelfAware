@@ -122,6 +122,10 @@ export const useVapi = (book: IBook) => {
         clearInterval(timerRef.current);
         timerRef.current = null;
       }
+      if (startTimerRef.current) {
+        clearTimeout(startTimerRef.current);
+        startTimerRef.current = null;
+      }
       if (sessionIdRef.current) {
         endVoiceSession(sessionIdRef.current, durationRef.current);
         sessionIdRef.current = null;
@@ -176,6 +180,8 @@ export const useVapi = (book: IBook) => {
 
       sessionIdRef.current = result.sessionId || null;
 
+      const maxDurationSec = (result.maxDurationMinutes ?? 5) * 60;
+
       const firstMessage = `Hey, good to meet you. Quick question, have you actually read ${book.title}? Or are you just skimming through it?`;
 
       await getVapi().start(ASSISTANT_ID, {
@@ -194,7 +200,15 @@ export const useVapi = (book: IBook) => {
           style: VOICE_SETTINGS.style,
           useSpeakerBoost: VOICE_SETTINGS.useSpeakerBoost,
         }
-      })
+      });
+
+      const maxDurationMs = maxDurationSec * 1000;
+      startTimerRef.current = setTimeout(() => {
+        if (isActive && sessionIdRef.current) {
+          stop();
+          setLimitError(`Session time limit reached (${result.maxDurationMinutes ?? 5} minutes).`);
+        }
+      }, maxDurationMs);
 
     }catch (e) {
       console.error('Error starting call', e);
