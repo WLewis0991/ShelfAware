@@ -1,5 +1,5 @@
 import { ASSISTANT_ID, DEFAULT_VOICE, VOICE_SETTINGS } from "@/lib/constants";
-import { IBook, Messages } from "@/types";
+import { IBook, Messages, VapiMessage } from "@/types";
 import { useAuth } from "@clerk/nextjs";
 import { useEffect, useRef, useState } from "react";
 import Vapi from "@vapi-ai/web"
@@ -70,7 +70,7 @@ export const useVapi = (book: IBook) => {
   useEffect(() => {
     const vapiInstance = getVapi();
 
-    const handleMessage = (message: any) => {
+    const handleMessage = (message: VapiMessage) => {
       if (!message || !message.type) return;
 
       if (message.type === "transcript") {
@@ -229,6 +229,8 @@ export const useVapi = (book: IBook) => {
 
   const clearErrors = () => setLimitError(null);
 
+  const timeLimitExceeded = limitError?.startsWith("Time limit reached") ?? false;
+
   return {
     status,
     isActive,
@@ -238,6 +240,7 @@ export const useVapi = (book: IBook) => {
     duration,
     maxDurationMinutes,
     limitError,
+    timeLimitExceeded,
     start,
     stop,
     clearErrors,

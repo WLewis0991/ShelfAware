@@ -19,16 +19,16 @@ const VapiControls = ({ book }: { book: IBook }) => {
   const router = useRouter()
   const {
     status, isActive, messages, currentMessage, currentUserMessage,
-    duration, maxDurationMinutes, limitError,
+    duration, maxDurationMinutes, limitError, timeLimitExceeded,
     start, stop, clearErrors,
   } = useVapi(book)
 
   useEffect(() => {
-    if (limitError?.startsWith("Time limit reached")) {
+    if (timeLimitExceeded) {
       const timer = setTimeout(() => router.push("/"), 3000)
       return () => clearTimeout(timer)
     }
-  }, [limitError, router])
+  }, [timeLimitExceeded, router])
 
   return (
     <>
@@ -39,12 +39,12 @@ const VapiControls = ({ book }: { book: IBook }) => {
               <AlertTriangle className="warning-banner-icon" />
               <span className="warning-banner-text">{limitError}</span>
             </div>
-            {limitError.startsWith("Time limit reached") && (
+            {timeLimitExceeded && (
               <p className="text-sm text-[var(--text-secondary)] mt-1 ml-7">
                 Redirecting to <Link href="/" className="underline font-medium">homepage</Link>...
               </p>
             )}
-            {!limitError.startsWith("Time limit reached") && (
+            {!timeLimitExceeded && (
               <button onClick={clearErrors} className="text-sm text-[var(--accent-warm)] underline ml-7 mt-1">
                 Dismiss
               </button>

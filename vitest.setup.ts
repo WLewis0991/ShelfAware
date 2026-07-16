@@ -1,13 +1,18 @@
 import { MongoMemoryServer } from "mongodb-memory-server";
-import mongoose from "mongoose";
+import mongoose, { Mongoose } from "mongoose";
 import { vi } from "vitest";
 
 let mongoServer: MongoMemoryServer;
 
 process.env.MONGODB_URI = "mongodb://placeholder";
 
-const cache = { conn: null as any, promise: null as any };
-(global as any).mongooseCache = cache;
+interface MongooseCache {
+  conn: Mongoose | null;
+  promise: Promise<Mongoose> | null;
+}
+
+const cache: MongooseCache = { conn: null, promise: null };
+(global as unknown as { mongooseCache: MongooseCache }).mongooseCache = cache;
 
 vi.mock("@clerk/nextjs/server", () => ({
   auth: vi.fn(() => ({

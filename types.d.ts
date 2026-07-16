@@ -1,8 +1,19 @@
 import { Document, Types } from "mongoose";
-import { ReactNode } from "react";
-import { Control, FieldPath, FieldValues } from "react-hook-form";
-import { LucideIcon } from "lucide-react";
-import z from "zod";
+import { PlanType } from "@/lib/subscription-constants";
+
+export interface VapiTranscriptMessage {
+  type: "transcript";
+  role: "user" | "assistant";
+  transcript: string;
+  transcriptType: "partial" | "final";
+}
+
+export interface VapiStatusMessage {
+  type: "status-update";
+  status: "ended" | "listening" | "thinking" | "speaking" | "connecting";
+}
+
+export type VapiMessage = VapiTranscriptMessage | VapiStatusMessage;
 
 export interface BookCardProps {
   title: string;
@@ -10,9 +21,6 @@ export interface BookCardProps {
   coverURL: string;
   slug: string;
 }
-//===============
-//Database models
-//===============
 
 export interface IBook extends Document {
   _id: string;
@@ -54,8 +62,6 @@ export interface IVoiceSession extends Document {
   updatedAt: Date;
 }
 
-//===========
-
 export interface CreateBook {
   clerkId: string;
   title: string;
@@ -80,27 +86,24 @@ export interface Messages {
   content: string;
 }
 
-
-import {PlanType} from "@/lib/subscription-constants";
-
 export interface SessionCheckResult {
-    allowed: boolean;
-    currentCount: number;
-    limit: number;
-    plan: PlanType;
-    maxDurationMinutes: number;
-    error?: string;
+  allowed: boolean;
+  currentCount: number;
+  limit: number;
+  plan: PlanType;
+  maxDurationMinutes: number;
+  error?: string;
 }
 
 export interface StartSessionResult {
-    success: boolean;
-    sessionId?: string;
-    maxDurationMinutes?: number;
-    error?: string;
-    isBillingError?: boolean;
+  success: boolean;
+  sessionId?: string;
+  maxDurationMinutes?: number;
+  error?: string;
+  isBillingError?: boolean;
 }
 
 export interface EndSessionResult {
-    success: boolean;
-    error?: string;
+  success: boolean;
+  error?: string;
 }
