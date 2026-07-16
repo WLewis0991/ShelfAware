@@ -198,3 +198,32 @@ export const getAllBooks = async () => {
     };
   }
 };
+
+export const searchBooks = async (query: string) => {
+  try {
+    await connectToDatabase();
+
+    const escaped = query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const regex = new RegExp(escaped, 'i');
+
+    const books = await Book.find({
+      $or: [
+        { title: { $regex: regex } },
+        { author: { $regex: regex } },
+      ],
+    })
+      .sort({ createdAt: -1 })
+      .lean();
+
+    return {
+      success: true,
+      data: serializeData(books),
+    };
+  } catch (e) {
+    console.error("Error searching books", e);
+    return {
+      success: false,
+      data: [],
+    };
+  }
+};
