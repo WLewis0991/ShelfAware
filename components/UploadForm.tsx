@@ -57,7 +57,7 @@ const voiceGroups = [
 function LoadingOverlay() {
   return (
     <div className="loading-wrapper">
-      <div className="loading-shadow-wrapper bg-white">
+      <div className="loading-shadow-wrapper bg-[var(--bg-card)]">
         <div className="loading-shadow">
           <div className="w-12 h-12 border-4 border-[var(--accent-warm)] border-t-transparent rounded-full loading-animation" />
           <p className="loading-title">Synthesizing your book...</p>

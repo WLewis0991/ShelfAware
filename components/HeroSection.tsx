@@ -33,17 +33,17 @@ export default function HeroSection() {
             />
           </div>
 
-          <div className="steps w-full lg:w-72 bg-white rounded-xl shadow-soft p-6 space-y-5">
+          <div className="steps w-full lg:w-72 bg-[var(--bg-card)] rounded-xl shadow-soft p-6 space-y-5">
             {steps.map((step) => (
               <div key={step.number} className="flex items-start gap-3">
-                <span className="shrink-0 w-8 h-8 rounded-full bg-(--color-brand) text-white flex items-center justify-center text-sm font-bold font-serif">
+                <span className="shrink-0 w-8 h-8 rounded-full bg-[var(--color-brand)] text-white flex items-center justify-center text-sm font-bold font-serif">
                   {step.number}
                 </span>
                 <div>
-                  <p className="font-semibold text-(--text-primary)">
+                  <p className="font-semibold text-[var(--text-primary)]">
                     {step.title}
                   </p>
-                  <p className="text-sm text-(--text-secondary)">
+                  <p className="text-sm text-[var(--text-secondary)]">
                     {step.description}
                   </p>
                 </div>

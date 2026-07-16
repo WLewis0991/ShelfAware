@@ -63,7 +63,7 @@ const VapiControls = ({ book }: { book: IBook }) => {
                 className="vapi-cover-image"
               />
             ) : (
-              <div className="vapi-cover-image flex items-center justify-center bg-[#d4c4a8] text-white font-bold text-lg">
+              <div className="vapi-cover-image flex items-center justify-center bg-[var(--text-muted)] text-white font-bold text-lg">
                 {book.title.charAt(0)}
               </div>
             )}
@@ -83,10 +83,10 @@ const VapiControls = ({ book }: { book: IBook }) => {
           
 
           <div className="flex flex-col gap-2 min-w-0 flex-1">
-            <h1 className="font-serif text-2xl sm:text-3xl font-bold text-[#212a3b] truncate">
+            <h1 className="font-serif text-2xl sm:text-3xl font-bold text-[var(--text-primary)] truncate">
               {book.title}
             </h1>
-            <p className="text-[#5a4a3a] text-sm">by {book.author}</p>
+            <p className="text-[var(--text-secondary)] text-sm">by {book.author}</p>
 
             <div className="flex flex-wrap items-center gap-2 mt-1">
               <span className="vapi-status-indicator">

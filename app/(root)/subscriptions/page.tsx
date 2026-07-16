@@ -43,7 +43,7 @@ export default async function SubscriptionsPage() {
           {(['free', 'standard', 'pro'] as PlanType[]).map((tier) => {
             const limits = PLAN_LIMITS[tier]
             return (
-              <div key={tier} className={`rounded-xl p-6 ${plan === tier ? 'bg-[var(--accent-light)] border-2 border-[var(--accent-warm)]' : 'bg-white'}`}>
+              <div key={tier} className={`rounded-xl p-6 ${plan === tier ? 'bg-[var(--accent-light)] border-2 border-[var(--accent-warm)]' : 'bg-[var(--bg-card)]'}`}>
                 <h3 className="text-xl font-bold capitalize mb-1">{tier}</h3>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-4">
                   <div>

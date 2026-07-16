@@ -11,6 +11,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
+import { ThemeToggle } from "./ThemeToggle";
 
 const navItems = [
   { label: "Library", href: "/" },
@@ -40,13 +41,14 @@ const Navbar = () => {
                 key={label}
                 className={cn(
                   "nav-link-base",
-                  isActive ? "nav-link-active" : "text-black hover:opacity-70",
+                  isActive ? "nav-link-active" : "text-[var(--text-primary)] hover:opacity-70",
                 )}
               >
                 {label}
               </Link>
             );
           })}
+          <ThemeToggle />
           <Show when="signed-out">
             <SignInButton />
             <SignUpButton />
