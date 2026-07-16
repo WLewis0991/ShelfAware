@@ -1,10 +1,13 @@
 'use client'
 
-import { Mic, MicOff } from "lucide-react"
+import { Mic, MicOff, AlertTriangle } from "lucide-react"
 import { IBook } from "@/types"
 import { useVapi } from "@/hooks/useVapi"
 import Image from "next/image"
+import Link from "next/link"
 import Transcript from "./Transcript"
+import { useEffect } from "react"
+import { useRouter } from "next/navigation"
 
 const formatDuration = (seconds: number): string => {
   const m = Math.floor(seconds / 60);
@@ -13,11 +16,42 @@ const formatDuration = (seconds: number): string => {
 };
 
 const VapiControls = ({ book }: { book: IBook }) => {
-  const{ status, isActive, messages, currentMessage, currentUserMessage, duration, start, stop, clearErrors, } = useVapi(book)
+  const router = useRouter()
+  const {
+    status, isActive, messages, currentMessage, currentUserMessage,
+    duration, maxDurationMinutes, limitError,
+    start, stop, clearErrors,
+  } = useVapi(book)
+
+  useEffect(() => {
+    if (limitError?.startsWith("Time limit reached")) {
+      const timer = setTimeout(() => router.push("/"), 3000)
+      return () => clearTimeout(timer)
+    }
+  }, [limitError, router])
 
   return (
     <>
       <div className="max-w-4xl mx-auto space-y-6">
+        {limitError && (
+          <div className="warning-banner">
+            <div className="warning-banner-content">
+              <AlertTriangle className="warning-banner-icon" />
+              <span className="warning-banner-text">{limitError}</span>
+            </div>
+            {limitError.startsWith("Time limit reached") && (
+              <p className="text-sm text-[var(--text-secondary)] mt-1 ml-7">
+                Redirecting to <Link href="/" className="underline font-medium">homepage</Link>...
+              </p>
+            )}
+            {!limitError.startsWith("Time limit reached") && (
+              <button onClick={clearErrors} className="text-sm text-[var(--accent-warm)] underline ml-7 mt-1">
+                Dismiss
+              </button>
+            )}
+          </div>
+        )}
+
         <div className="vapi-header-card">
           <div className="vapi-cover-wrapper">
             {book.coverURL ? (
@@ -65,7 +99,9 @@ const VapiControls = ({ book }: { book: IBook }) => {
                 </span>
               </span>
               <span className="vapi-status-indicator">
-                <span className="vapi-status-text">{formatDuration(duration)}/15:00</span>
+                <span className="vapi-status-text">
+                  {formatDuration(duration)}/{formatDuration(maxDurationMinutes * 60)}
+                </span>
               </span>
             </div>
           </div>

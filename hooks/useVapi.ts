@@ -40,7 +40,6 @@ function getVapi(): InstanceType<typeof Vapi> {
 
 export const useVapi = (book: IBook) => {
   const { userId } = useAuth();
-  // TODO: implement limits based on accounts.
 
   const [status, setStatus] = useState<CallStatus>("idle");
   const [messages, setMessages] = useState<Messages[]>([]);
@@ -48,6 +47,7 @@ export const useVapi = (book: IBook) => {
   const [currentUserMessage, setCurrentUserMessage] = useState("");
   const [duration, setDuration] = useState(0);
   const [limitError, setLimitError] = useState<string | null>(null);
+  const [maxDurationMinutes, setMaxDuration] = useState(5);
 
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const startTimerRef = useRef<NodeJS.Timeout | null>(null);
@@ -56,6 +56,7 @@ export const useVapi = (book: IBook) => {
 
   const bookRef = useLatestRef(book);
   const durationRef = useLatestRef(duration);
+  const statusRef = useLatestRef(status);
   const voice = book.persona || DEFAULT_VOICE;
 
   const isActive =
@@ -63,6 +64,8 @@ export const useVapi = (book: IBook) => {
     status === "thinking" ||
     status === "speaking" ||
     status === "starting";
+
+  const isActiveRef = useLatestRef(isActive);
 
   useEffect(() => {
     const vapiInstance = getVapi();
@@ -169,6 +172,7 @@ export const useVapi = (book: IBook) => {
 
     setLimitError(null);
     setStatus('connecting');
+    setDuration(0);
 
     try {
       const result = await startVoiceSession(userId, bookRef.current._id);
@@ -179,8 +183,8 @@ export const useVapi = (book: IBook) => {
       }
 
       sessionIdRef.current = result.sessionId || null;
-
-      const maxDurationSec = (result.maxDurationMinutes ?? 5) * 60;
+      const maxMinutes = result.maxDurationMinutes ?? 5;
+      setMaxDuration(maxMinutes);
 
       const firstMessage = `Hey, good to meet you. Quick question, have you actually read ${book.title}? Or are you just skimming through it?`;
 
@@ -202,11 +206,11 @@ export const useVapi = (book: IBook) => {
         }
       });
 
-      const maxDurationMs = maxDurationSec * 1000;
+      const maxDurationMs = maxMinutes * 60 * 1000;
       startTimerRef.current = setTimeout(() => {
-        if (isActive && sessionIdRef.current) {
+        if (isActiveRef.current && sessionIdRef.current) {
           stop();
-          setLimitError(`Session time limit reached (${result.maxDurationMinutes ?? 5} minutes).`);
+          setLimitError(`Time limit reached. Your plan allows ${maxMinutes} minute sessions.`);
         }
       }, maxDurationMs);
 
@@ -216,12 +220,14 @@ export const useVapi = (book: IBook) => {
       setLimitError('An error occurred while starting the call');
     }
   };
+
   const stop = async () => {
     isStoppingRef.current = true;
     await getVapi().stop();
     isStoppingRef.current = false;
   };
-  const clearErrors = async () => {};
+
+  const clearErrors = () => setLimitError(null);
 
   return {
     status,
@@ -230,6 +236,8 @@ export const useVapi = (book: IBook) => {
     currentMessage,
     currentUserMessage,
     duration,
+    maxDurationMinutes,
+    limitError,
     start,
     stop,
     clearErrors,
