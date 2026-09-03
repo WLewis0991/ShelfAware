@@ -1,12 +1,18 @@
 "use client";
 
+import { useSyncExternalStore } from "react";
 import { Moon, Sun } from "lucide-react";
 import { useTheme } from "next-themes";
 
+const emptySubscribe = () => () => {};
+
 export function ThemeToggle() {
   const { setTheme, resolvedTheme } = useTheme();
-
-  if (typeof window === "undefined") return <div className="size-5" />;
+  const isClient = useSyncExternalStore(
+    emptySubscribe,
+    () => true,
+    () => false,
+  );
 
   const isDark = resolvedTheme === "dark";
 
@@ -16,7 +22,13 @@ export function ThemeToggle() {
       className="nav-btn"
       aria-label="Toggle dark mode"
     >
-      {isDark ? <Sun className="size-5" /> : <Moon className="size-5" />}
+      {!isClient ? (
+        <div className="size-5" />
+      ) : isDark ? (
+        <Sun className="size-5" />
+      ) : (
+        <Moon className="size-5" />
+      )}
     </button>
   );
 }
