@@ -34,9 +34,9 @@ export async function POST(request: Request): Promise<NextResponse> {
         console.log("File uploaded to blob: ", blob.url);
 
         const payload = tokenPayload ? JSON.parse(tokenPayload) : null;
-        const userId = payload?.userId;
 
-        // TODO: PostHog
+        // TODO: PostHog — use payload.userId for analytics
+        void payload;
       },
     });
 

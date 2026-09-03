@@ -56,7 +56,6 @@ export const useVapi = (book: IBook) => {
 
   const bookRef = useLatestRef(book);
   const durationRef = useLatestRef(duration);
-  const statusRef = useLatestRef(status);
   const voice = book.persona || DEFAULT_VOICE;
 
   const isActive =
@@ -144,7 +143,7 @@ export const useVapi = (book: IBook) => {
       vapiInstance.off("call-start", handleCallStart);
       vapiInstance.off("call-end", handleCallEnd);
     };
-  }, []);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     if (status === "listening" || status === "speaking" || status === "thinking") {
