@@ -237,6 +237,7 @@ const UploadForm = () => {
 
       if (!book.success) {
         toast.error((book.error as string) || "Failed to create book");
+        return;
       }
 
       if (book.alreadyExisting) {
@@ -246,8 +247,14 @@ const UploadForm = () => {
         return;
       }
 
+      const bookId = book.data?._id;
+      if (!bookId) {
+        toast.error("Book was created without an ID. Please try again.");
+        return;
+      }
+
       const segments = await saveBookSegments(
-        book.data._id,
+        bookId,
         userId,
         parsedPDF.content,
       );
