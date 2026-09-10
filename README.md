@@ -18,6 +18,14 @@ Built with Next.js 16, React 19, MongoDB, Clerk authentication with subscription
 
 ---
 
+## Screenshots
+
+![Shelf Aware library home](public/screenshot-main.png)
+
+![Shelf Aware voice conversation](public/screenshot-conversation.png)
+
+---
+
 ## Features
 
 - **PDF Upload** — Drag-and-drop PDF upload with automatic text extraction and cover image generation using `pdfjs-dist`
