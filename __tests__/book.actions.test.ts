@@ -108,7 +108,7 @@ describe("saveBookSegments", () => {
       },
     ];
 
-    const result = await saveBookSegments(bookId, validBook.clerkId, segments);
+    const result = await saveBookSegments(bookId, segments);
 
     expect(result.success).toBe(true);
     expect(result.data?.segmentsCreated).toBe(2);
@@ -126,7 +126,7 @@ describe("saveBookSegments", () => {
       { text: "No page number segment", segmentIndex: 0, wordCount: 5 },
     ];
 
-    const result = await saveBookSegments(bookId, validBook.clerkId, segments);
+    const result = await saveBookSegments(bookId, segments);
 
     expect(result.success).toBe(true);
     expect(result.data?.segmentsCreated).toBe(1);
@@ -138,7 +138,7 @@ describe("saveBookSegments", () => {
     ];
 
     await mongoose.disconnect();
-    const result = await saveBookSegments(bookId, validBook.clerkId, segments);
+    const result = await saveBookSegments(bookId, segments);
 
     expect(result.success).toBe(false);
     expect(result.error).toBeDefined();

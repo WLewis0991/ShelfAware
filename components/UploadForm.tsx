@@ -255,7 +255,6 @@ const UploadForm = () => {
 
       const segments = await saveBookSegments(
         bookId,
-        userId,
         parsedPDF.content,
       );
 

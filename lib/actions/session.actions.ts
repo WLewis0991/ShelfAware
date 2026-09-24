@@ -2,6 +2,7 @@
 
 import { auth } from "@clerk/nextjs/server";
 import { connectToDatabase } from "@/database/mongoose";
+import Book from "@/database/models/book.model";
 import VoiceSession from "@/database/models/voiceSession.model";
 import { getCurrentBillingPeriodStart } from "../subscription-constants";
 import { checkSessionLimit } from "../plans";
@@ -28,6 +29,11 @@ export const startVoiceSession = async (
             }
 
             await connectToDatabase();
+
+            const book = await Book.findById(bookId).lean();
+            if (!book || book.clerkId !== userId) {
+                return { success: false, error: 'Book not found', isBillingError: false }
+            }
 
             const session = await VoiceSession.create({
                 clerkId, bookId, startedAt: new Date(),
@@ -57,16 +63,23 @@ export const endVoiceSession = async (
   durationSeconds: number,
 ): Promise<EndSessionResult> => {
   try {
+    const { userId } = await auth();
+    if (!userId) {
+      return { success: false, error: "Not authenticated" };
+    }
+
     await connectToDatabase();
 
-    const session = await VoiceSession.findByIdAndUpdate(
-      sessionId,
-      { endedAt: new Date(), durationSeconds },
-    );
+    const session = await VoiceSession.findById(sessionId);
 
-    if (!session) {
+    if (!session || session.clerkId !== userId) {
       return { success: false, error: "Session not found" };
     }
+
+    await VoiceSession.findByIdAndUpdate(sessionId, {
+      endedAt: new Date(),
+      durationSeconds,
+    });
 
     return { success: true };
   } catch (e) {
